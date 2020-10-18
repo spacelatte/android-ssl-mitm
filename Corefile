@@ -1,0 +1,40 @@
+#!/usr/local/bin/coredns -conf
+
+(generic) {
+	any
+	log
+	loop
+	nsid
+	root /
+	cache
+	chaos
+	hosts /etc/hosts . {
+		ttl 10
+		reload 60s
+		fallthrough
+	}
+	errors
+	health
+	whoami
+	reload 5s 5s
+	forward . /etc/resolv.conf {
+		policy round_robin
+		expire 10s
+	}
+	transfer {
+		to *
+	}
+	loadbalance round_robin
+}
+
+.:53 {
+	import generic
+	template IN ANY . {
+		answer "{{.Name}} 60 {{.Class}} A {$ADDRESS}"
+		fallthrough
+	}
+}
+
+localhost:53 internal:53 http:53 {
+	import generic
+}
