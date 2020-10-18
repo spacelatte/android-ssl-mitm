@@ -35,7 +35,7 @@ virtualdevice: ~/.android/avd/$(EMULATOR_NAME).avd ~/.android/avd/$(EMULATOR_NAM
 		-avd "$(EMULATOR_NAME)" -dns-server "$(HOST_ADDRESS)" \
 		-skin "$(subst $(space),_,$(EMULATOR_DEVICE))" \
 		-skindir "$(ANDROID_SDK_ROOT)/skins" \
-		-memory "$(EMULATOR_MEMORY)"
+		-memory "$(EMULATOR_MEMORY)" \
 		;
 
 ~/.android/avd/$(EMULATOR_NAME).avd ~/.android/avd/$(EMULATOR_NAME).ini:
