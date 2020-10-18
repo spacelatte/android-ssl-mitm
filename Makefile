@@ -8,6 +8,14 @@ EMULATOR_NAME   := androidemu
 EMULATOR_IMAGE  := system-images;android-25;google_apis;$(EMILATOR_ARCH)
 EMULATOR_DEVICE := Nexus 5
 
+ifndef  ANDROID_HOME
+$(error ANDROID_HOME is not set)
+endif
+
+ifeq ($(ANDROID_HOME),)
+$(error ANDROID_HOME must not be empty)
+endif
+
 all: containers virtualdevice
 
 logs:
