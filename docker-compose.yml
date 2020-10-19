@@ -83,6 +83,7 @@ services:
     - ./cert.sh:/docker-entrypoint.d/99-cert.sh:ro
     - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     - ./issue.sh:/home/ssl/issue.sh:ro
+    # - ./ssl:/home/ssl:rw # use this for mounting certs to host
 
   dns:
     image: coredns/coredns:latest

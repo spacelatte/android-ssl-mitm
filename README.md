@@ -1,9 +1,11 @@
 
-# Android SSL MitM
+# Android SSL MITM
 
 This projects helps you to easily setup man-in-the-middle proxy for virtual android device.
 
 Includes NGINX as a reverse-proxy, CoreDNS as a resolver and Debian image.
+
+**DEMO** (12:41): https://youtu.be/QS1VPGZRf2U
 
 The NGINX part is actually using OpenResty, which includes Lua module. I am using this to **automatically issue certificates on demand**.
 
@@ -16,7 +18,7 @@ The NGINX part is actually using OpenResty, which includes Lua module. I am usin
 - Android Emulator
 - Android System Image: 25, Google APIs
 - Set your `$ANDROID_SDK_ROOT` to proper value;
-  on macOS: `export ANDROID_SDK_ROOT="${HOME}/Library/Android/sdk"`
+  - on macOS: `export ANDROID_SDK_ROOT="${HOME}/Library/Android/sdk"`
 
 ### Usage:
 
@@ -27,6 +29,8 @@ The NGINX part is actually using OpenResty, which includes Lua module. I am usin
 $ git clone https://github.com/pvtmert/android-ssl-mitm.git
 $ make -C android-ssl-mitm ANDROID_SDK_ROOT="${HOME}/Library/Android/sdk"
 ```
+
+> Optionally, comment out `./ssl:/home/ssl:rw` in [docker-compose.yml](docker-compose.yml) to see generated certs and possibly use them in Wireshark...
 
 ### How it works:
 
