@@ -30,8 +30,7 @@ containers:
 
 space :=
 space +=
-virtualdevice: $(ANDROID_SDK_ROOT)/$(EMULATOR_IMAGE) \
-	~/.android/avd/$(EMULATOR_NAME).avd ~/.android/avd/$(EMULATOR_NAME).ini
+virtualdevice: $(ANDROID_SDK_ROOT)/$(EMULATOR_IMAGE) ~/.android/avd/$(EMULATOR_NAME).avd
 	$(ANDROID_SDK_ROOT)/emulator/emulator \
 		-shell \
 		-verbose \
@@ -44,14 +43,16 @@ virtualdevice: $(ANDROID_SDK_ROOT)/$(EMULATOR_IMAGE) \
 		-skin "$(subst $(space),_,$(EMULATOR_DEVICE))" \
 		-skindir "$(ANDROID_SDK_ROOT)/skins" \
 		-memory "$(EMULATOR_MEMORY)" \
+		-prop debug.hwui.renderer=skiagl \
 		;
 
-~/.android/avd/$(EMULATOR_NAME).avd ~/.android/avd/$(EMULATOR_NAME).ini:
+~/.android/avd/$(EMULATOR_NAME).avd:
 	$(ANDROID_SDK_ROOT)/tools/bin/avdmanager -v create avd -f \
 		-k "$(subst /,;,$(EMULATOR_IMAGE))" \
 		-d "$(EMULATOR_DEVICE)" \
 		-n "$(EMULATOR_NAME)" \
 		;
+	echo hw.keyboard=yes | tee -a ~/.android/avd/$(EMULATOR_NAME).avd/config.ini
 
 $(ANDROID_SDK_ROOT)/$(EMULATOR_IMAGE):
 	$(ANDROID_SDK_ROOT)/tools/bin/sdkmanager --install "$(subst /,;,$(EMULATOR_IMAGE))"
@@ -60,3 +61,6 @@ clean:
 	-docker-compose down -v --remove-orphans
 	-killall qemu-system-$(EMILATOR_ARCH)
 	-$(ANDROID_SDK_ROOT)/tools/bin/avdmanager -v delete avd -n "$(EMULATOR_NAME)"
+
+domains: ssl
+	find $< -iname '*.pub' -exec basename {} .pub \;

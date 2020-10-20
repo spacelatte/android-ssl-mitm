@@ -40,17 +40,22 @@ services:
       adb push *.0 /system/etc/security/cacerts/
       adb shell chmod 644 /system/etc/security/cacerts/*.0
       adb push *.crt /sdcard/
-      #adb push root.crt  /data/misc/keystore/user_0/1000_CACERT_ca
-      #adb push int.crt   /data/misc/keystore/user_0/1000_CACERT_int
-      #adb push local.crt /data/misc/keystore/user_0/1000_USRCERT_crt
-      #adb shell chown -vR keystore:keystore /data/misc/keystore/user_0/
+      # adb push root.crt  /data/misc/keystore/user_0/1000_CACERT_ca
+      # adb push int.crt   /data/misc/keystore/user_0/1000_CACERT_int
+      # adb push local.crt /data/misc/keystore/user_0/1000_USRCERT_crt
+      # adb shell chown -vR keystore:keystore /data/misc/keystore/user_0/
       xargs -n1 -- adb install -r /mnt/*.apk
-      adb reboot
-      until adb connect host.docker.internal | grep -i connected; do sleep 1; done
-      adb wait-for-any-device
-      adb root
-      until adb connect host.docker.internal | grep -i connected; do sleep 1; done
-      adb wait-for-any-device
+      # adb reboot
+      # adb shell svc power reboot
+      # adb shell setprop ctl.restart zygote
+      # adb shell am start -a android.intent.action.REBOOT
+      # until adb connect host.docker.internal | grep -i connected; do sleep 1; done
+      # adb wait-for-any-device
+      # adb root
+      # until adb connect host.docker.internal | grep -i connected; do sleep 1; done
+      # adb wait-for-any-device
+      adb shell stop
+      adb shell start
       adb logcat
       exit
     networks:

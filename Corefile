@@ -6,6 +6,7 @@
 	loop
 	nsid
 	root /
+#	mdns compose.docker.internal 2
 	cache
 	chaos
 	hosts /etc/hosts . {

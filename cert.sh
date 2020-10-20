@@ -46,14 +46,11 @@ tee "${CERT_FILE[1]}.cnf" <<-EOF
 	[default]
 	extensions = exts
 	copy_extensions = copy
-	default_startdate = $(date -ur / +%Y%m%d%H%M%SZ)
-	[ ca ]
-	default_startdate = $(date -ur / +%Y%m%d%H%M%SZ)
 	[ req ]
 	utf8 = yes
 	prompt = no
-	default_bits = $((CERT_SIZE))
 	default_md = sha256
+	default_bits = $((CERT_SIZE))
 	req_extensions  = exts
 	x509_extensions = exts
 	distinguished_name = dn
@@ -98,8 +95,8 @@ tee "${CERT_FILE[2]}.cnf" <<-EOF
 	[ req ]
 	utf8 = yes
 	prompt = no
-	default_bits = $((CERT_SIZE))
 	default_md = sha256
+	default_bits = $((CERT_SIZE))
 	req_extensions  = exts
 	x509_extensions = exts
 	distinguished_name = dn

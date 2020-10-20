@@ -46,5 +46,6 @@ $ make -C android-ssl-mitm ANDROID_SDK_ROOT="${HOME}/Library/Android/sdk"
   - AVD name can be overridden using `EMULATOR_NAME` variable.
   - Memory size in MB of AVD is 2048, `EMULATOR_MEMORY` can override that.
   - Android version can be changed using: `make EMULATOR_VER=android-28 ...`. This will download image if it does not exist on the system.
+    - Currently android-29 and android-30 gets into reboot-loop because of edited system image.
 - Put any APK you want to install in this directory (root of the repo)
   - The `adb` service will install them automatically.

@@ -17,19 +17,39 @@ CERT=( ${QUERY_STRING} "$@" )
 test -z "${CERT[0]}"     && exit
 test -e "${CERT[0]}.crt" && exit
 
+touch index.txt
+test -e serial.txt || tee serial.txt <<< 00
+
 # test -e "${CERT[0]}.cnf" || \
 tee "${CERT[0]}.cnf" <<-EOF
 	[default]
 	extensions = exts
+	# $(date -ur / +%Y%m%d%H%M%SZ)
 	[ ca ]
-	default_startdate = $(date -ur / +%Y%m%d%H%M%SZ)
+	default_ca = ca_default
+	[ ca_default ]
+	serial   = serial.txt
+	database = index.txt
+	email_in_dn = yes
+	default_md = default
+	# default_days = $((DAYS))
+	# default_startdate = 20200101000000Z
+	# x509_extensions = exts
+	# copy_extensions = none
+	[ policy_anything ]
+	countryName            = optional
+	stateOrProvinceName    = optional
+	localityName           = optional
+	organizationName       = optional
+	organizationalUnitName = optional
+	commonName             = supplied
+	emailAddress           = optional
 	[ req ]
 	utf8 = yes
 	prompt = no
-	default_bits = $((SIZE))
 	default_md = sha256
+	default_bits = $((SIZE))
 	req_extensions  = exts
-	x509_extensions = exts
 	distinguished_name = dn
 	[ dn ]
 	countryName            = ZZ
@@ -55,13 +75,21 @@ openssl req \
 	-newkey "rsa:${SIZE}" \
 	-keyout "${CERT[0]}.key" \
 	-config "${CERT[0]}.cnf" \
-| openssl x509 -req \
-	-CAcreateserial \
-	-CA      "./ca.crt" \
-	-CAkey   "./ca.key" \
+| openssl ca \
+	-utf8 \
+	-batch \
+	-preserveDN \
+	-create_serial \
+	-cert    "./ca.crt" \
+	-keyfile "./ca.key" \
 	-extfile "${CERT[0]}.cnf" \
+	-config  "${CERT[0]}.cnf" \
 	-out     "${CERT[0]}.crt" \
+	-in      "/dev/stdin" \
 	-days    "$((DAYS))" \
+	-policy policy_anything \
+	-startdate "$(date -ur / +%Y%m%d%H%M%SZ)" \
+	-outdir "/tmp" \
 	;
 openssl rsa -pubout -in "${CERT[0]}.key" -out "${CERT[0]}.pub"
 
@@ -70,3 +98,5 @@ cat "${CERT[0]}.crt" "./ca.crt" \
 | openssl x509 -noout -text
 
 chmod a+rX ${CERT[0]}.{crt,key,cnf,pub}
+
+sleep 1 # use this in order to fix chrome's behavior with clock drift
