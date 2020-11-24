@@ -9,6 +9,8 @@ CERT_NAME="${ARGS[0]}"
 CERT_FILE=( root ca "${CERT_NAME}" )
 CERT_MAIL=info@${CERT_NAME}
 
+test -e "libsslkeylog.so" && exit 0
+
 rm -vf *.{cnf,crt,key,srl,pub}
 
 tr '\n' '/' <<-EOF | openssl req \
@@ -170,4 +172,15 @@ chmod -R a=rwX ssl/
 # nsCertType = sslCA, emailCA
 # issuerAltName = issuer:copy
 # subjectAltName = email:copy
+
+grep -qi '^env' /etc/openresty/nginx.conf || {
+	apt update && apt install -y curl gcc libssl-dev
+	curl -sL "https://git.lekensteyn.nl/peter/wireshark-notes/plain/src/sslkeylog.c" \
+	| cc -fPIC -ldl -shared -o libsslkeylog.so -x c -
+	tee -a /etc/openresty/nginx.conf <<-EOF
+	env LD_PRELOAD;
+	env SSLKEYLOGFILE;
+	EOF
+	nginx -s quit
+}
 
