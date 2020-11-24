@@ -67,7 +67,7 @@ tee "${CERT[0]}.cnf" <<-EOF
 EOF
 unset IFS
 
-openssl req \
+echo openssl req \
 	-new    \
 	-batch  \
 	-nodes  \
@@ -75,6 +75,13 @@ openssl req \
 	-newkey "rsa:${SIZE}" \
 	-keyout "${CERT[0]}.key" \
 	-config "${CERT[0]}.cnf" \
+| openssl req \
+	-new    \
+	-batch  \
+	-nodes  \
+	-set_serial "$((RANDOM))" \
+	-config "${CERT[0]}.cnf" \
+	-key "./ca.key" \
 | openssl ca \
 	-utf8 \
 	-batch \
@@ -91,7 +98,8 @@ openssl req \
 	-startdate "$(date -ur / +%Y%m%d%H%M%SZ)" \
 	-outdir "/tmp" \
 	;
-openssl rsa -pubout -in "${CERT[0]}.key" -out "${CERT[0]}.pub"
+#openssl rsa -pubout -in "${CERT[0]}.key" -out "${CERT[0]}.pub"
+ln -s "./ca.key" "${CERT[0]}.key"
 
 cat "${CERT[0]}.crt" "./ca.crt" \
 | tee "${CERT[0]}.bundle.crt" \
@@ -99,4 +107,3 @@ cat "${CERT[0]}.crt" "./ca.crt" \
 
 chmod a+rX ${CERT[0]}.{crt,key,cnf,pub}
 
-sleep 1 # use this in order to fix chrome's behavior with clock drift
