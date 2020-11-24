@@ -25,6 +25,7 @@ services:
     - -exc
     command:
     - |
+      sleep 30
       trap 'echo exiting; kill $$(jobs -p); kill 0' HUP INT TERM # EXIT
       until test -e bundle.crt && adb connect host.docker.internal | grep -i connected; do
         sleep 1
@@ -40,11 +41,12 @@ services:
       adb push *.0 /system/etc/security/cacerts/
       adb shell chmod 644 /system/etc/security/cacerts/*.0
       adb push *.crt /sdcard/
+      # adb push *.apk /sdcard/
       # adb push root.crt  /data/misc/keystore/user_0/1000_CACERT_ca
       # adb push int.crt   /data/misc/keystore/user_0/1000_CACERT_int
       # adb push local.crt /data/misc/keystore/user_0/1000_USRCERT_crt
       # adb shell chown -vR keystore:keystore /data/misc/keystore/user_0/
-      xargs -n1 -- adb install -r /mnt/*.apk
+      # ls -1 | grep '.apk$$' | xargs -n1 -- adb install -r
       # adb reboot
       # adb shell svc power reboot
       # adb shell setprop ctl.restart zygote
@@ -66,9 +68,11 @@ services:
 
   http:
     image: openresty/openresty:latest
-    restart: on-failure
+    restart: unless-stopped
     working_dir: /home
     environment:
+      LD_PRELOAD: /home/libsslkeylog.so
+      SSLKEYLOGFILE: /home/sslkeylog.txt
       NGINX_ENTRYPOINT_QUIET_LOGS: "1"
     command:
     # - nginx-debug
@@ -88,6 +92,7 @@ services:
     - ./cert.sh:/docker-entrypoint.d/99-cert.sh:ro
     - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     - ./issue.sh:/home/ssl/issue.sh:ro
+    - ./ssl.log:/home/sslkeylog.txt:rw
     # - ./ssl:/home/ssl:rw # use this for mounting certs to host
 
   dns:
