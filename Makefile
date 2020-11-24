@@ -4,9 +4,9 @@ PROJECT_NAME     := mitm
 ANDROID_SDK_ROOT := $(ANDROID_SDK_ROOT)
 HOST_ADDRESS     := $(shell ipconfig getifaddr en0 || hostname -i )
 EMULATOR_VER     := android-25
-EMILATOR_ARCH    := x86_64
+EMULATOR_ARCH    := x86_64
 EMULATOR_NAME    := androidemu
-EMULATOR_IMAGE   := system-images/$(EMULATOR_VER)/google_apis/$(EMILATOR_ARCH)
+EMULATOR_IMAGE   := system-images/$(EMULATOR_VER)/google_apis/$(EMULATOR_ARCH)
 EMULATOR_DEVICE  := Nexus 5
 EMULATOR_MEMORY  := 2048
 
@@ -59,7 +59,7 @@ $(ANDROID_SDK_ROOT)/$(EMULATOR_IMAGE):
 
 clean:
 	-docker-compose down -v --remove-orphans
-	-killall qemu-system-$(EMILATOR_ARCH)
+	-killall qemu-system-$(EMULATOR_ARCH)
 	-$(ANDROID_SDK_ROOT)/tools/bin/avdmanager -v delete avd -n "$(EMULATOR_NAME)"
 
 domains: ssl
