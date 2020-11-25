@@ -15,6 +15,7 @@ volumes:
 services:
 
   adb:
+    image: pvtmert/android-ssl-mitm
     build:
       context: .
       dockerfile: Dockerfile
